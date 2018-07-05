@@ -4,6 +4,10 @@ module.exports.parse = parseTweets;
 
 var options = {};
 
+function textOf(tweetObj){
+  return tweetObj.text || tweetObj.full_text
+}
+
 function parseTweets(tweets, opts) {
   options = opts;
   return Array.isArray(tweets) ? tweets.map(parseTweet) : parseTweet(tweets);
@@ -22,7 +26,7 @@ function parseTweet(tweetObj) {
   var processorObj;
 
   //Copying text value to a new property html. The final output will be set to this property
-  tweetObj.html = tweetObj.text;
+  tweetObj.html = textOf(tweetObj);
 
   //Process entities
   if(Object.getOwnPropertyNames(entities).length) {
@@ -65,7 +69,7 @@ function processUrls(urls, tweetObj) {
   urls.forEach((urlObj, index) => {
     var quotedTweetHtml = '';
     var indices = urlObj.indices;
-    var urlToReplace = tweetObj.text.substring(indices[0],indices[1]);
+    var urlToReplace = textOf(tweetObj).substring(indices[0],indices[1]);
 
     if(index === urls.length-1 && tweetObj.quoted_status) {
       quotedTweetHtml = parseTweets(tweetObj.quoted_status).html;
